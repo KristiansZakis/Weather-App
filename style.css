@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 1000px;
+}
+
+header {
+    background-color: blue;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.infoBoard {
+    background-color: red;
+    height: 350px;
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 100px;
+    color: white;
+}
+
+#weather {
+    background-color: darkgoldenrod;
+    width: 550px;
+    height: 330px;
+    display: flex;
+    padding: 10px;
+    margin: 0;
+    margin-left: 25px;
+    flex-direction: column;
+    overflow: auto;
+    text-align: center;
+}
+
+#map {
+    display: block;
+    padding: 0;
+    height: 345px;
+    margin-top: 0;
+    width: 300px;
+    margin-left: 0;
+    border: 3px solid black;
+}
+
+.weatherInfo {
+    height: 140px;
+    width: 240px;
+    background-color: rgb(74, 74, 66);
+    margin: 10px;
+    text-align: center;
+}
