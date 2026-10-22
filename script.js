@@ -1,5 +1,30 @@
 const API_KEY = '0f29acec20b221801b8c86633fc6f730';
 
+const WEATHER_IMAGES = {
+    sunny: 'images/clear-sky.avif',
+    cloudy: 'images/cloudy-sky.jpg',
+    greyClouds: 'images/grey-clouds.webp',
+    raining: 'images/raining.jpg',
+    storm: 'images/storm.jpg',
+    snow: 'images/snowy.avif',
+    default: 'images/bg-2.avif'
+};
+
+function renderImage(data) {
+    const id = data.weather?.[0]?.id;
+    let key = 'default';
+
+    if (id >= 200 && id < 300) key = 'storm';
+    else if (id >= 300 && id < 600) key = 'raining';
+    else if (id >= 600 && id < 700) key = 'snow';
+    else if (id === 800) key = 'sunny';
+    else if (id === 801 || id === 802) key = 'cloudy';
+    else if (id === 803 || id === 804) key = 'greyClouds';
+    else if (id >= 700 && id < 800) key = 'greyClouds';
+
+    els.clouds.style.backgroundImage = `url('${WEATHER_IMAGES[key]}')`;
+}
+
 const map = L.map('map').setView([57.5381, 25.4231], 13);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -24,6 +49,7 @@ const overlays = {
 L.control.layers(null, overlays).addTo(map);
 
 const els = {
+    clouds: document.getElementById('clouds'),
     precipitation: document.getElementById('precipitation'),
     temperature: document.getElementById('temperature'),
     wind: document.getElementById('wind'),
@@ -41,16 +67,25 @@ function degToCompass(deg) {
     return dirs[Math.round(deg / 22.5) % 16];
 }
 
+
 function renderWeather(data) {
+    renderImage(data);
     const rain = data.rain?.['1h'] ?? 0;
     const snow = data.snow?.['1h'] ?? 0;
     const place = data.name || 'Unknown place';
 
+    els.clouds.innerHTML = `
+    <div class="current">
+        <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png" alt="">
+        <div class="current-text">
+            <div class="place">${place}</div>
+            <div class="temp">${Math.round(data.main.temp)}°C</div>
+            <div class="desc">${data.weather[0].description}</div>
+        </div>
+    </div>`;
+
     els.precipitation.innerHTML = `
-        <strong>Precipitation</strong><br>
-        <small>${place}</small><br>
-        <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt=""><br>
-        ${data.weather[0].description}<br>
+        <strong>Clouds</strong><br>
         Rain: ${rain} mm/h<br>
         Snow: ${snow} mm/h<br>
         Clouds: ${data.clouds.all}%`;

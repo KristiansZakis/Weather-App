@@ -1,11 +1,17 @@
 body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
     height: 1000px;
+    background-image: url('images/bg-1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 header {
-    background-color: blue;
+    background-color: rgb(96, 96, 136);
     height: 10%;
     display: flex;
     justify-content: center;
@@ -16,26 +22,12 @@ header {
 }
 
 .infoBoard {
-    background-color: red;
+    background-color: rgb(209, 209, 209);
     height: 350px;
     display: flex;
     width: 80%;
     margin: 0 auto;
-    margin-top: 100px;
     color: white;
-}
-
-#weather {
-    background-color: darkgoldenrod;
-    width: 550px;
-    height: 330px;
-    display: flex;
-    padding: 10px;
-    margin: 0;
-    margin-left: 25px;
-    flex-direction: column;
-    overflow: auto;
-    text-align: center;
 }
 
 #map {
@@ -48,10 +40,63 @@ header {
     border: 3px solid black;
 }
 
+#weather {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 240px);
+    grid-auto-rows: 140px;
+    gap: 25px;
+    justify-content: center;
+    align-content: center;
+}
+
 .weatherInfo {
-    height: 140px;
-    width: 240px;
     background-color: rgb(74, 74, 66);
-    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.5;
     text-align: center;
+    border-radius: 8px;
+}
+
+#clouds {
+    width: 80%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 100px auto 0;
+    padding: 0;
+    background-image: url('images/bg-2.avif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.current {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.current img {
+    width: 120px;
+    height: 120px;
+}
+
+.place {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.temp {
+    font-size: 3rem;
+    line-height: 1.1;
+}
+
+.desc {
+    font-size: 1.1rem;
+    text-transform: capitalize;
+    color: #555;
 }
