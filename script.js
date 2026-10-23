@@ -10,6 +10,24 @@ const WEATHER_IMAGES = {
     default: 'images/bg-2.avif'
 };
 
+const dateTime = new Date();
+
+function updateClock() {
+    document.getElementById('dateTime').textContent =
+        new Date().toLocaleString('en-GB', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
 function renderImage(data) {
     const id = data.weather?.[0]?.id;
     let key = 'default';
@@ -49,7 +67,7 @@ const overlays = {
 L.control.layers(null, overlays).addTo(map);
 
 const els = {
-    clouds: document.getElementById('clouds'),
+    clouds: document.getElementById('head'),
     precipitation: document.getElementById('precipitation'),
     temperature: document.getElementById('temperature'),
     wind: document.getElementById('wind'),
