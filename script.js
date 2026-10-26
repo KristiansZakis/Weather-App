@@ -1,4 +1,4 @@
-const API_KEY = '0f29acec20b221801b8c86633fc6f730';
+const API_KEY = '123b44720c6c311f69d8f41e8d7b997e';
 
 const WEATHER_IMAGES = {
     sunny: 'images/clear-sky.avif',
@@ -74,6 +74,8 @@ const els = {
     pressure: document.getElementById('pressure')
 };
 
+const dayCards = document.querySelectorAll('#weekInfo .infoDate');
+
 function setAll(html) {
     Object.values(els).forEach(el => (el.innerHTML = html));
 }
@@ -84,7 +86,6 @@ function degToCompass(deg) {
         'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
     return dirs[Math.round(deg / 22.5) % 16];
 }
-
 
 function renderWeather(data) {
     renderImage(data);
@@ -126,6 +127,55 @@ function renderWeather(data) {
         Visibility: ${data.visibility !== undefined ? (data.visibility / 1000).toFixed(1) + ' km' : '–'}`;
 }
 
+function renderForecast(data) {
+    const offset = data.city?.timezone ?? 0;
+    const days = {};
+
+    data.list.forEach(item => {
+        const local = new Date((item.dt + offset) * 1000);
+        const key = local.toISOString().slice(0, 10);
+        (days[key] ||= []).push({ item, hour: local.getUTCHours() });
+    });
+
+    Object.keys(days).sort().slice(0, 5).forEach((key, i) => {
+        if (!dayCards[i]) return;
+        const entries = days[key];
+
+        const max = Math.max(...entries.map(e => e.item.main.temp_max));
+        const min = Math.min(...entries.map(e => e.item.main.temp_min));
+        const pop = Math.max(...entries.map(e => e.item.pop ?? 0));
+        const wind = Math.max(...entries.map(e => e.item.wind.speed));
+
+        const rep = entries.reduce((a, b) =>
+            Math.abs(b.hour - 12) < Math.abs(a.hour - 12) ? b : a).item;
+
+        const icon = rep.weather[0].icon.replace('n', 'd');
+        const label = new Date(key + 'T12:00:00Z').toLocaleDateString('en-GB', {
+            weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'
+        });
+
+        dayCards[i].innerHTML = `
+            <strong>${i === 0 ? 'Today' : label}</strong>
+            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="">
+            <div class="day-temp">${Math.round(max)}° / ${Math.round(min)}°C</div>
+            <div class="day-desc">${rep.weather[0].description}</div>
+            <div>Rain chance: ${Math.round(pop * 100)}%</div>
+            <div>Wind: ${wind.toFixed(1)} m/s ${degToCompass(rep.wind.deg)}</div>`;
+    });
+}
+
+async function loadForecast(lat, lon) {
+    dayCards.forEach(c => (c.textContent = 'Loading...'));
+    try {
+        const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        renderForecast(await res.json());
+    } catch (err) {
+        dayCards.forEach(c => (c.textContent = 'Forecast unavailable: ' + err.message));
+    }
+}
+
 let marker = null;
 
 map.on('click', async (e) => {
@@ -135,6 +185,7 @@ map.on('click', async (e) => {
     else marker = L.marker(e.latlng).addTo(map);
 
     setAll('Loading...');
+    loadForecast(lat, lng);
 
     try {
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=metric&appid=${API_KEY}`;
